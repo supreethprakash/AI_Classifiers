@@ -1,11 +1,13 @@
 from collections import defaultdict
 from collections import Counter
-from random import random
+from random import random, gauss
+#import random
 from math import log, e
 import pickle
 import os
 
-alpha = 0.1
+#alpha = 0.0000000000001
+alpha = 0.00001
 orient = [0,90,180,270]
 
 
@@ -29,7 +31,7 @@ class Network:
         self.L = 3
 
     def assign_random_weights(self):
-        weights = defaultdict(Counter)
+        weights = defaultdict(defaultdict)
         hidden_start = self.input_node_count
         hidden_end = hidden_start + self.hidden_node_count
         output_start = hidden_end
@@ -44,7 +46,8 @@ class Network:
 
     @staticmethod
     def get_initial_weight():
-        return random()
+        return gauss(255/2,255/4)
+        #return random()
 
 
 def get_pixel_objects(pixels):
@@ -89,34 +92,39 @@ def get_orientation_list(orient):
         lst.append(y)
     return lst
 
-
+#
 # def g(x):
 #     res = 1 + (e ** x)
 #     return log(res)
 
 
 def g(x):
-    return max(0,x)
+    return x if x > 0 else (0.01 * x)
 
 # def g_prime(x):
 #     res = 1 + (e ** -x)
 #     return 1.0 / res
 
 def g_prime(x):
-    return 1 if x > 0 else 0
+    return 1 if x > 0 else 0.01
 
 
-def iter_helper(range_start, range_end, array, index, multiplier, is_const=True):
+def iter_helper(range_start, range_end, array, index, multiplier):
     count = 0
     for j in range(range_start, range_end):
-        if is_const:
-            count += (array[j][index] * multiplier)
-        else:
             count += (array[j][index] * multiplier[j])
     return count
 
 
-def soft_max(lst):
+def iter_helper_backward(range_start, range_end, array, index, multiplier):
+    count = 0
+    for j in range(range_start, range_end):
+            count += (array[index][j] * multiplier[j])
+    return count
+
+
+def soft_max(input_arr):
+    lst = input_arr[:]
     max_ele = max(lst)
 
     for i in range(len(lst)):
@@ -134,13 +142,24 @@ def soft_max(lst):
     return lst
 
 
+def scale_outputs(y, out_node_vals):
+    if out_node_vals.count(0) == 4:
+        return y
+    res = []
+    max_v = max(out_node_vals)
+    for i in range(len(y)):
+        x = max_v if y[i] == 1 else 0
+        res.append(x)
+    return res
+
+
 def back_prop_learning(examples, network):
     global alpha
     hidden_start = network.input_node_count
     hidden_end = network.input_node_count + network.hidden_node_count
     output_start = hidden_end
     output_end = output_start + network.output_node_count
-    for iteration in range(10):
+    for iteration in range(5):
 
         for example in examples.values():
             y = get_orientation_list(example[1])
@@ -156,7 +175,7 @@ def back_prop_learning(examples, network):
                 # temp = 0
                 # for i in range(network.input_node_count):
                 #     temp += network.weights[i][j] * a[i]
-                in_vec[j] = iter_helper(0, network.input_node_count, network.weights,j, a[i])
+                in_vec[j] = iter_helper(0, network.input_node_count, network.weights,j, a)
                 a[j] = g(in_vec[j])
 
             out_node_vals = []
@@ -164,22 +183,23 @@ def back_prop_learning(examples, network):
                 # temp = 0
                 # for i in range(hidden_start,hidden_end):
                 #     temp += network.weights[i][j] * a[i]
-                in_vec[j] = iter_helper(hidden_start, hidden_end, network.weights, j, a[i])
+                in_vec[j] = iter_helper(hidden_start, hidden_end, network.weights, j, a)
                 a[j] = g(in_vec[j])
                 out_node_vals.append(a[j])
 
             soft_max_vals = soft_max(out_node_vals)
+            #expected_vals = scale_outputs(y,out_node_vals)
 
             for j in range(output_start, output_end):
-                delta[j] = g_prime(in_vec[j]) * (y[j - output_start] - a[j])#soft_max_vals[j - output_start])
+                delta[j] = g_prime(in_vec[j]) * (y[j - output_start] - soft_max_vals[j - output_start])
 
             for i in range(hidden_start, hidden_end):
                 delta[i] = g_prime(in_vec[i])
-                delta[i] *= iter_helper(output_start, output_end, network.weights, i, delta, False)
+                delta[i] *= iter_helper_backward(output_start, output_end, network.weights, i, delta)
 
             for i in range(network.input_node_count):
                 delta[i] = g_prime(in_vec[i])
-                delta[i] *= iter_helper(hidden_start, hidden_end, network.weights, i, delta, False)
+                delta[i] *= iter_helper_backward(hidden_start, hidden_end, network.weights, i, delta)
 
             for i in network.weights.keys():
                 for j in network.weights[i].keys():
@@ -211,6 +231,7 @@ def test(network, examples):
     output_end = output_start + network.output_node_count
     image_count = len(examples)
     correct_prediction = 0
+    predtictions = Counter()
 
     for example in examples.values():
         true_orientation = example[1]
@@ -225,7 +246,7 @@ def test(network, examples):
             # temp = 0
             # for i in range(network.input_node_count):
             #     temp += network.weights[i][j] * a[i]
-            in_vec[j] = iter_helper(0, network.input_node_count, network.weights,i, a[i])
+            in_vec[j] = iter_helper(0, network.input_node_count, network.weights,j, a)
             a[j] = g(in_vec[j])
 
         out_node_vals = []
@@ -233,7 +254,7 @@ def test(network, examples):
             # temp = 0
             # for i in range(hidden_start,hidden_end):
             #     temp += network.weights[i][j] * a[i]
-            in_vec[j] = iter_helper(hidden_start, hidden_end, network.weights,i, a[i])
+            in_vec[j] = iter_helper(hidden_start, hidden_end, network.weights,j, a)
             a[j] = g(in_vec[j])
             out_node_vals.append(a[j])
 
@@ -241,13 +262,16 @@ def test(network, examples):
 
         predicted_orientation = get_orientation_value(soft_max_vals.index(max(soft_max_vals)))
 
+        predtictions[predicted_orientation] += 1
+
         if true_orientation == predicted_orientation:
             correct_prediction += 1
     print("%d correctly predicted out of %d images" %(correct_prediction,image_count))
     print("Accuracy - %f" %((float(correct_prediction)/image_count) * 100))
+    print(predtictions)
 
 
-def neural_net(train_file, test_file, hidden_node_count):
+def neural_net(train_file, test_file, hidden_node_count,read_cache=False):
     image_pixel_count = 64
     orientation_count = 4
     if hidden_node_count == 0:
@@ -256,8 +280,9 @@ def neural_net(train_file, test_file, hidden_node_count):
 
     examples = get_training_set(train_file)
     network = build_network(image_pixel_count, hidden_node_count, orientation_count)
-    if os.path.isfile("cache"):
+    if os.path.isfile("cache") and read_cache:
         neural_network = deserialize_network("cache")
+        print("Loaded from the cache")
     else:
         neural_network = back_prop_learning(examples, network)
         serialize_network(neural_network, "cache")
