@@ -6,7 +6,7 @@ import operator
 def calculateBestSplit(datatset, degree, weight, ensemble):
     dataLength = len(datatset[0][1])
     x, y = random.sample(set(list(range(dataLength))), 2)
-    leastError = 100000
+    leastError = 40000
     if x != y:
         error = 0
         counter = 0
@@ -25,6 +25,7 @@ def calculateBestSplit(datatset, degree, weight, ensemble):
             bestAtt1 = x
             bestAtt2 = y
             if (bestAtt1, bestAtt2) not in ensemble:
+                weight = tempWeights
                 alpha = float(1 - (float(error) / len(datatset))) / len(datatset)
                 alpha = alpha * 100000
                 l = []
@@ -40,6 +41,7 @@ def calculateBestSplit(datatset, degree, weight, ensemble):
 def ensemle(dataset, numOfStumps, degree):
 
     ensemble = []
+    #weight = [1] * len(dataset)
     for i in range(numOfStumps):
         ensemble = calculateBestSplit(dataset,degree,weight, ensemble)
     return ensemble
@@ -108,13 +110,13 @@ if __name__ == '__main__':
     testDict = convertToRGB('test-data.txt')
     trainingSet = convertToRGB('train-data.txt')
     weight = [1] * len(trainingSet)
-    e0 = ensemle(trainingSet, 20, 0)
+    e0 = ensemle(trainingSet, 50, 0)
     weight = [1] * len(trainingSet)
-    e1 = ensemle(trainingSet, 20, 90)
+    e1 = ensemle(trainingSet, 50, 90)
     weight = [1] * len(trainingSet)
-    e2 = ensemle(trainingSet, 20, 180)
+    e2 = ensemle(trainingSet, 50, 180)
     weight = [1] * len(trainingSet)
-    e3 = ensemle(trainingSet, 20, 270)
+    e3 = ensemle(trainingSet, 50, 270)
 
     c = testing(e0,e1,e2,e3,testDict)
 
@@ -125,4 +127,4 @@ if __name__ == '__main__':
 
     print c
     print len(testDict)
-    print float(c)/len(testDict)
+    print (float(c)/len(testDict)) * 100
