@@ -18,7 +18,14 @@ try:
     count = argv[4]
 except Exception:
     count = 0
+try:
+    model_file = argv[5]
+except Exception:
+    model_file = False
 
-algo_dict[algo](train_file,test_file,count)
+try:
+    algo_dict[algo](train_file,test_file,count,model_file)
+except KeyError:
+    print("Invalid Algorithm %s. Please check again" %algo)
 
 
