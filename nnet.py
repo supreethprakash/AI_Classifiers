@@ -51,7 +51,7 @@ class Network:
     def get_initial_weight():
         # return gauss(255/2,255/4)
         # return gauss(0.25, 0.1)
-        return gauss(0.01,0.01)
+        return gauss(0.001,0.01)
 
 
 class Propagator:
@@ -255,7 +255,7 @@ def learn(examples, network, linear_iter_count=1):
     iteration = 0
     sample_size = 200
     iteration_count = len(examples) / sample_size
-    satisfactory_prediction_count = 0.70 * sample_size
+    satisfactory_prediction_count = 0.85 * sample_size
 
     for i in range(linear_iter_count):
         for example in examples.values():
@@ -285,13 +285,14 @@ def learn(examples, network, linear_iter_count=1):
             del propagator
 
         print("Right Predictions - %d/%d" % (right_predictions, sample_size))
+
         if right_predictions >= satisfactory_prediction_count:
             print("Hitting Local minima.")
-            # if right_predictions >= 79:
-            #     break
             local_minima_count += 1
             iteration = 1
-            satisfactory_prediction_count += 0.01 * sample_size
+            # satisfactory_prediction_count += 0.01 * sample_size
+            # break
+
         if iteration >= iteration_count:
             satisfactory_prediction_count -= 0.01 * sample_size
             print("Expectations are now %d" % satisfactory_prediction_count)
