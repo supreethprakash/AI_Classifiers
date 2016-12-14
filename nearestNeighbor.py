@@ -29,7 +29,7 @@ def convertToPixelVals(dataList):
 	ctr = 0
 	for eachRow in dataList:
 		values = eachRow.strip().split(' ')
-		pixelValue[ctr] = (map(int, values[2:len(values)]), int(values[1]))
+		pixelValue[ctr] = (map(int, values[2:len(values)]), int(values[1]), values[0])
 		ctr += 1
 	return pixelValue
 
@@ -64,24 +64,28 @@ def getAccuracy(testDict, predictions):
 
 	for val in testDict.values():
 		if val[1] == 0:
+			print val[2], val[1], predictions[ctr]
 			if val[1] == predictions[ctr]:
 				counterDict[0][0] += 1
 			else:
 				counterDict[0][indexDict[predictions[ctr]]] += 1
 
 		elif val[1] == 90:
+			print val[2], val[1], predictions[ctr]
 			if val[1] == predictions[ctr]:
 				counterDict[90][1] += 1
 			else:
 				counterDict[90][indexDict[predictions[ctr]]] += 1
 
 		elif val[1] == 180:
+			print val[2], val[1], predictions[ctr]
 			if val[1] == predictions[ctr]:
 				counterDict[180][2] += 1
 			else:
 				counterDict[180][indexDict[predictions[ctr]]] += 1
 
 		else:
+			print val[2], val[1], predictions[ctr]
 			if val[1] == predictions[ctr]:
 				counterDict[270][3] += 1
 			else:
@@ -93,8 +97,6 @@ def getAccuracy(testDict, predictions):
 
 
 def nearest(trainFile, testFile, count, modelFile):
-	import timeit
-	start = timeit.default_timer()
 	trainList = readFile(trainFile)
 	testList = readFile(testFile)
 	testDict = convertToPixelVals(testList)
@@ -107,5 +109,3 @@ def nearest(trainFile, testFile, count, modelFile):
 
 	counterDict = getAccuracy(testDict, predictions)
 	outputMatrix(counterDict, 'nearest_output.txt')
-	stop = timeit.default_timer()
-	print stop - start
