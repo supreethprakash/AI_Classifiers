@@ -1,11 +1,13 @@
 from sys import argv
 import nnet
 import nearestNeighbor
+import adaboost as boost
 
 algo_dict = {
     'nnet': nnet.neural_net,
     'nearest': nearestNeighbor.nearest,
-    'best': nnet.neural_net
+    'best': nnet.neural_net,
+	'adaboost': boost.adaboost
 }
 
 if len(argv) < 4:

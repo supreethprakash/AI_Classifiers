@@ -200,21 +200,16 @@ def testing(e0,e1,e2,e3,dataset):
     outputMatrix(counterDict1,'sample.txt')
 
 
-
-
-
-if __name__ == '__main__':
-    trainingSet = []
-    testSet = []
-
-    testDict = convertToRGB('test-data.txt')
-    trainingSet = convertToRGB('train-data.txt')
+def adaboost(trainTest, testSet, stumps, model):
+    e0, e1, e2, e3 = 0, 0, 0, 0
+    testDict = convertToRGB(testSet)
+    trainingSet = convertToRGB(trainTest)
     orientation = [0,90,180,270]
     points = float(1)/len(trainingSet)
     for i in orientation:
         weight = [points] * len(trainingSet)
         error = len(trainingSet)
-        e = ensemble(trainingSet,50,i, weight, error)
+        e = ensemble(trainingSet,int(stumps),i, weight, error)
         if i == 0:
             e0 = e
         elif i == 90:
@@ -223,4 +218,4 @@ if __name__ == '__main__':
             e2 = e
         else:
             e3 = e
-
+    testing(e0, e1, e2, e3, testDict)
