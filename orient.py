@@ -1,9 +1,10 @@
 from sys import argv
 import nnet
-
+import nearestNeighbor
 
 algo_dict = {
-    'nnet': nnet.neural_net
+    'nnet': nnet.neural_net,
+    'nearest': nearestNeighbor.nearest
 }
 
 if len(argv) < 4:

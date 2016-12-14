@@ -1,8 +1,7 @@
 '''
 This file contains the utility functions that can be used through out the assignment.
 '''
-import random
-import string
+import os
 
 def readFile(fileName):
 	file = open(fileName, 'r')
@@ -16,13 +15,30 @@ def convertToRGB(fileName):
 	ctr = 0
 	contents = readFile(fileName)
 	for eachLine in contents:
-		rgbValues = () 
+		rgbValues = ()
 		imageVector = eachLine.split(' ')
-		for i in range(2, len(imageVector), 3):
-			rgbValues = rgbValues + (findIntensity(map(int,imageVector[i:i+3])), )
+		for i in range(2, len(imageVector)):
+			rgbValues = rgbValues + (int(imageVector[i]), )
 		RGBList[ctr] = (int(imageVector[1]), rgbValues)
 		ctr += 1
 	return RGBList
 
 def findIntensity(pixel):
 	return (0.2989 * pixel[0]) + (0.5870 * pixel[1]) + (0.1140 * pixel[2])
+
+
+def outputMatrix(valueDict, fileName):
+	print 'The Accuracy of the classifier is ' + str(((valueDict[0][0] + valueDict[90][1] + valueDict[180][2] +
+	                                                   valueDict[270][3]) / ((sum(valueDict[0]) + sum(
+		valueDict[90]) + sum(valueDict[180]) + sum(valueDict[270])) * 1.0)) * 100.0) + '\n'
+	print 'The Confusion Matrix looks like this\n'
+	file = open(fileName, 'w')
+	for val in valueDict.values():
+		for item in val:
+			file.write('{:4}'.format(item),)
+			print '{:4}'.format(item),
+		print ''
+		file.write(os.linesep)
+	file.close()
+
+
