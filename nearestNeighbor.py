@@ -72,21 +72,18 @@ def getAccuracy(testDict, predictions):
 				counterDict[0][indexDict[predictions[ctr]]] += 1
 
 		elif val[1] == 90:
-			print val[2], val[1], predictions[ctr]
 			if val[1] == predictions[ctr]:
 				counterDict[90][1] += 1
 			else:
 				counterDict[90][indexDict[predictions[ctr]]] += 1
 
 		elif val[1] == 180:
-			print val[2], val[1], predictions[ctr]
 			if val[1] == predictions[ctr]:
 				counterDict[180][2] += 1
 			else:
 				counterDict[180][indexDict[predictions[ctr]]] += 1
 
 		else:
-			print val[2], val[1], predictions[ctr]
 			if val[1] == predictions[ctr]:
 				counterDict[270][3] += 1
 			else:
