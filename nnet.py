@@ -4,6 +4,7 @@ from collections import Counter
 from collections import defaultdict
 from math import e, log
 from random import gauss, sample
+from utilities import writeFile
 
 
 """
@@ -176,7 +177,7 @@ def get_training_set(filename):
     with open(filename) as f:
         for line in f:
             key, orientation, pixels = process_line(line)
-            key_uniq = ''.join([key, str(orientation)])
+            key_uniq = ''.join([key,'|', str(orientation)])
             lst[key_uniq] = (pixels, int(orientation))
     return lst
 
@@ -378,8 +379,12 @@ def get_orientation_value(index):
 # Now test the neural network based on the input supplied.
 def test(network, inputs):
     confusion_matrix = defaultdict(Counter)
+    pred_lst = []
 
-    for example in inputs.values():
+    # for example in inputs.values():
+    for key in inputs.keys():
+        example = inputs[key]
+        image_file = key.split('|')[0]
         true_orientation = example[1]
         x = example[0]
 
@@ -388,6 +393,10 @@ def test(network, inputs):
         soft_max_vals = propagator.soft_max_vals
         predicted_orientation = get_orientation_value(soft_max_vals.index(max(soft_max_vals)))
         confusion_matrix[str(true_orientation)][str(predicted_orientation)] += 1
+        pred = image_file+' '+str(predicted_orientation)
+        pred_lst.append(pred)
+
+    writeFile(pred_lst,'nnet_output.txt')
 
     result = Result(confusion_matrix)
     return result

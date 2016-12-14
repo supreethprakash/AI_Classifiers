@@ -19,7 +19,7 @@ def convertToRGB(fileName):
 		imageVector = eachLine.split(' ')
 		for i in range(2, len(imageVector)):
 			rgbValues = rgbValues + (int(imageVector[i]), )
-		RGBList[ctr] = (int(imageVector[1]), rgbValues)
+		RGBList[ctr] = (int(imageVector[1]), rgbValues, imageVector[0])
 		ctr += 1
 	return RGBList
 
@@ -32,13 +32,14 @@ def outputMatrix(valueDict, fileName):
 	                                                   valueDict[270][3]) / ((sum(valueDict[0]) + sum(
 		valueDict[90]) + sum(valueDict[180]) + sum(valueDict[270])) * 1.0)) * 100.0) + '\n'
 	print 'The Confusion Matrix looks like this\n'
-	file = open(fileName, 'w')
 	for val in valueDict.values():
 		for item in val:
-			file.write('{:4}'.format(item),)
 			print '{:4}'.format(item),
 		print ''
+
+def writeFile(list1, fileName):
+	file = open(fileName, 'wb')
+	for eachRow in list1:
+		file.write(eachRow)
 		file.write(os.linesep)
 	file.close()
-
-

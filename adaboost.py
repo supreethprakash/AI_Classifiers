@@ -120,6 +120,7 @@ def testing(e0,e1,e2,e3,dataset):
     correctness = 0
     counterDict1 = {0: [0, 0, 0, 0], 90: [0, 0, 0, 0], 180: [0, 0, 0, 0], 270: [0, 0, 0, 0]}
     indexDict = {0: 0, 90: 1, 180: 2, 270: 3}
+    output = []
     for record in dataset.values():
         counterDict = {'counter0':0, 'counter1':0, 'counter2':0, 'counter3':0}
         for i in range(len(e0)):
@@ -172,7 +173,7 @@ def testing(e0,e1,e2,e3,dataset):
         if c == int(record[0]):
             correctness += 1
 
-
+        output.append(str(record[2]) + ' ' + str(c))
 
         if int(record[0]) == 0:
             if int(record[0]) == c:
@@ -197,7 +198,8 @@ def testing(e0,e1,e2,e3,dataset):
                 counterDict1[270][3] += 1
             else:
                 counterDict1[270][indexDict[c]] += 1
-    outputMatrix(counterDict1,'sample.txt')
+    outputMatrix(counterDict1,'adaboost_confusion.txt')
+    writeFile(output, 'adaboost_output.txt')
 
 
 def adaboost(trainTest, testSet, stumps, model):

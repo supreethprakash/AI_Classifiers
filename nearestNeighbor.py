@@ -61,10 +61,11 @@ def getAccuracy(testDict, predictions):
 	counterDict = {0:[0, 0, 0, 0], 90:[0, 0, 0, 0], 180:[0, 0, 0, 0], 270:[0, 0, 0, 0]}
 	indexDict = {0:0, 90:1, 180:2, 270:3}
 	ctr = 0
+	predictionOutput = []
 
 	for val in testDict.values():
+		predictionOutput.append(val[2] + ' ' + str(predictions[ctr]))
 		if val[1] == 0:
-			print val[2], val[1], predictions[ctr]
 			if val[1] == predictions[ctr]:
 				counterDict[0][0] += 1
 			else:
@@ -93,7 +94,7 @@ def getAccuracy(testDict, predictions):
 
 		ctr += 1
 
-	return counterDict
+	return counterDict, predictionOutput
 
 
 def nearest(trainFile, testFile, count, modelFile):
@@ -107,5 +108,6 @@ def nearest(trainFile, testFile, count, modelFile):
 		predictedClass = getVoting(topNeighbors)
 		predictions.append(predictedClass)
 
-	counterDict = getAccuracy(testDict, predictions)
+	counterDict, listForOutput = getAccuracy(testDict, predictions)
 	outputMatrix(counterDict, 'nearest_output.txt')
+	writeFile(listForOutput, 'nearest_output.txt')
