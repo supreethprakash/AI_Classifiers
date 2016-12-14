@@ -205,24 +205,24 @@ def get_orientation_list(orient):
 
 
 # Smoothing approximation of the relu function (https://en.wikipedia.org/wiki/Rectifier_(neural_networks) ):
-def g(x):
-    res = 1 + (e ** x)
-    return log(res)
+# def g(x):
+#     res = 1 + (e ** x)
+#     return log(res)
 
 
 # Leaky ReLu
-# def g(x):
-#     return x if x > 0 else (0.01 * x)
+def g(x):
+    return x if x > 0 else (0.01 * x)
 
 # The derivative
-def g_prime(x):
-    res = 1 + (e ** -x)
-    return 1.0 / res
+# def g_prime(x):
+#     res = 1 + (e ** -x)
+#     return 1.0 / res
 
 
 # Leaky ReLu's derivative
-# def g_prime(x):
-#     return 1 if x > 0 else 0.01
+def g_prime(x):
+    return 1 if x > 0 else 0.01
 
 
 # Helper to iterate over the values

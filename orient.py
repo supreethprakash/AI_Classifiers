@@ -4,7 +4,8 @@ import nearestNeighbor
 
 algo_dict = {
     'nnet': nnet.neural_net,
-    'nearest': nearestNeighbor.nearest
+    'nearest': nearestNeighbor.nearest,
+    'best': nnet.neural_net
 }
 
 if len(argv) < 4:
@@ -15,14 +16,20 @@ train_file = argv[1]
 test_file = argv[2]
 algo = argv[3]
 count = 0
-try:
-    count = argv[4]
-except Exception:
-    count = 0
-try:
-    model_file = argv[5]
-except Exception:
+if algo == 'best':
     model_file = False
+    if len(argv) > 4:
+        model_file = argv[4]
+        count = 64
+else:
+    try:
+        count = argv[4]
+    except Exception:
+        count = 0
+    try:
+        model_file = argv[5]
+    except Exception:
+        model_file = False
 
 try:
     algo_dict[algo](train_file,test_file,count,model_file)
