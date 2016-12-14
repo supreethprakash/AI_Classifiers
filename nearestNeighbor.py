@@ -93,6 +93,8 @@ def getAccuracy(testDict, predictions):
 
 
 def nearest(trainFile, testFile, count, modelFile):
+	import timeit
+	start = timeit.default_timer()
 	trainList = readFile(trainFile)
 	testList = readFile(testFile)
 	testDict = convertToPixelVals(testList)
@@ -105,3 +107,5 @@ def nearest(trainFile, testFile, count, modelFile):
 
 	counterDict = getAccuracy(testDict, predictions)
 	outputMatrix(counterDict, 'nearest_output.txt')
+	stop = timeit.default_timer()
+	print stop - start
