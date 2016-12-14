@@ -20,9 +20,10 @@ algo = argv[3]
 count = 0
 if algo == 'best':
     model_file = False
+    count = 64
     if len(argv) > 4:
         model_file = argv[4]
-        count = 64
+
 else:
     try:
         count = argv[4]
